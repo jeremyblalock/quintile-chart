@@ -1,0 +1,87 @@
+<!doctype html>
+<html>
+<head>
+<title>Testing new aggregate chart</title>
+
+<meta name='apple-mobile-web-app-capable' content='yes' />
+
+<link rel="shortcut icon" href="/favicon.ico">
+
+<!-- Responsive and mobile friendly stuff -->
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="target-densitydpi=160dpi, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
+
+<link href='static/css/main.css' rel='stylesheet'>
+</head>
+<body>
+
+  <div id='chart-wrapper'>
+  </div>
+
+<script src='static/js/lib/d3.js'></script>
+<script src='static/js/chart.js'></script>
+<script>
+
+(function() {
+
+  var chart = new AggregateChart({
+    id: 'chart-wrapper'
+  });
+
+  function setRandomData(time) {
+    var data = [
+      {
+        label: '$0-$30K',
+        values: [
+          {label: 'Income Tax', value: Math.random() * 7000 - 3500},
+          {label: 'Sales Tax', value: Math.random() * 7000 - 3500},
+          {label: 'Education', value: Math.random() * 7000 - 3500}
+        ]
+      },
+      {
+        label: '$30K-$52K',
+        values: [
+          {label: 'Income Tax', value: Math.random() * 7000 - 3500},
+          {label: 'Sales Tax', value: Math.random() * 7000 - 3500},
+          {label: 'Education', value: Math.random() * 7000 - 3500}
+        ]
+      },
+      {
+        label: '$52K-65K',
+        values: [
+          {label: 'Income Tax', value: Math.random() * 7000 - 3500},
+          {label: 'Sales Tax', value: Math.random() * 7000 - 3500},
+          {label: 'Transportation', value: Math.random() * 7000 - 3500}
+        ]
+      },
+      {
+        label: '$65K-90K',
+        values: [
+          {label: 'Income Tax', value: Math.random() * 7000 - 3500},
+          {label: 'Sales Tax', value: Math.random() * 7000 - 3500},
+          {label: 'Transportation', value: Math.random() * 7000 - 3500}
+        ]
+      },
+      {
+        label: '$90k+',
+        values: [
+          {label: 'Capital Gains', value: Math.random() * 7000 - 3500},
+          {label: 'Income Tax', value: Math.random() * 7000 - 3500},
+          {label: 'Transportation', value: Math.random() * 7000 - 3500}
+        ]
+      }
+    ];
+    chart.setData(data, time);
+  }
+
+  setRandomData(0);
+
+  //window.setInterval(setRandomData, 2000);
+
+})();
+
+</script>
+
+</body>
+</html>
