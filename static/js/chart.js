@@ -1,14 +1,17 @@
 window.AggregateChart = function(config) {
 
-    var wrapper = d3.select('#' + config.id),
+    var wrapper = config.el ? d3.select(config.el) : d3.select('#' + config.id),
         data = config.data || {},
         scale = 0, offset = 0,
         self = this;
 
+    self.format = config.format || Math.round;
+
     this.setData = function(newData, time) {
         data = newData;
         for (var i = 0; i < data.length; i += 1) {
-            data[i].value = d3.sum(data[i].values, function(d) { return d.value });
+            data[i].value = d3.sum(data[i].values,
+                function(d) { return d.value });
             data[i].max = Math.max(data[i].value,
                 d3.max(data[i].values, function(d) { return d.value }));
             data[i].min = Math.min(data[i].value,
@@ -19,18 +22,19 @@ window.AggregateChart = function(config) {
 
     this.init = function() {
         wrapper.selectAll('div').remove();
-        this.el = wrapper.append('div');
+        this.el = wrapper.append('div').classed('aggregate-chart', true);
         this.el.style({
             position: 'relative'
         });
-        this.yAxis = this.el.append('div').classed('y-axis', true)
-            .style({
-                position: 'absolute',
-                top: 0,
-                bottom: 0,
-                'border-left': '1px solid rgba(0, 0, 0, .2)',
-                left: '50%'
-            });
+        this.xAxisSvg = this.el.append('div').classed('x-axis-wrapper', true)
+            .append('svg');
+        this.xAxis = d3.svg.axis().tickSize(-1000);
+        this.xAxis.orient('top');
+        this.xAxis.scale(d3.scale.linear().domain([0, 0]).range([0, 0]));
+        this.xAxisGroup = this.xAxisSvg.append('g')
+            .attr('transform', 'translate(50 50)');
+        this.xAxisGroup.call(this.xAxis);
+        this.rows = this.el.append('div').classed('aggregate-chart-rows', true);
     }
 
     this.update = function(time) {
@@ -50,10 +54,12 @@ window.AggregateChart = function(config) {
         //  the sum values maximums/minimums.
         var max = Math.max(0, d3.max(data, function(d) { return d.max })),
             min = Math.min(0, d3.min(data, function(d) { return d.min }));
-        scale = (totalWidth - labelMaxWidth - labelPadding -
-            accordionWidth - tooltipWidth) / (max - min);
-        offset = -1 * min * scale + labelMaxWidth + labelPadding
-            + accordionWidth;
+        var barWidth = (totalWidth - labelMaxWidth - labelPadding -
+            accordionWidth - tooltipWidth);
+        scale = barWidth / (max - min);
+        offsetSub = Math.round(-1 * min * scale);
+        offset = offsetSub + labelMaxWidth + labelPadding + accordionWidth;
+        offsetRight = totalWidth - offset - 1;
 
         // COMMENTING TO SIMPLIFY, FOR NOW
         // Calculate the width of the label column
@@ -67,20 +73,20 @@ window.AggregateChart = function(config) {
         //});
 
         // Selects
-        var chartRows = this.el.selectAll('.chart-row')
+        var chartRows = this.rows.selectAll('.aggregate-chart-row')
                             .data(data);
         var enter = chartRows.enter().append('div')
-                .classed('chart-row', true)
+                .classed('aggregate-chart-row', true)
                 .style({
                     position: 'relative',
                     'padding-left':
                         (labelMaxWidth + labelPadding + accordionWidth) + 'px'
                     });
-        var arrows = enter.append('span').classed('accordion-button', true)
+        var arrows = enter.append('span').classed('aggregate-accordion-button', true)
             .html('&#9654;')
             .style({
                 position: 'absolute',
-                left: '0px'
+                left: '5px'
             }).on('click', function(sel, n) {
                 var sel2;
                 chartRows.every(function(d) { sel2 = d3.select(d[n]); });
@@ -88,26 +94,30 @@ window.AggregateChart = function(config) {
             });
 
         // Add text row labels
-        enter.append('div').classed('chart-label', true)
+        enter.append('div').classed('aggregate-chart-label', true)
             .style('display', 'inline-block')
             .text(function(d) {
                 return d.label
             }).style({
                 'margin-left': -1 * (labelMaxWidth + labelPadding) + 'px'
+            }).on('click', function(sel, n) {
+                var sel2;
+                chartRows.every(function(d) { sel2 = d3.select(d[n]); });
+                sel2.classed('expanded', !sel2.classed('expanded'));
             });
 
         // Create the bar for positive effects
-        enter.append('div').classed('bar', true).classed('positive', true)
+        enter.append('div').classed('aggregate-chart-bar', true).classed('positive', true)
             .style({
                 position: 'absolute',
                 background: '#7d7',
                 top: 0,
                 height: '1em',
                 left: '50%'
-            }).append('div').classed('tooltip', true);
+            }).append('div').classed('aggregate-tooltip', true);
 
         // Create the bar for negative effects
-        enter.append('div').classed('bar', true).classed('negative', true)
+        enter.append('div').classed('aggregate-chart-bar', true).classed('negative', true)
             .style({
                 position: 'absolute',
                 background: '#f77',
@@ -116,17 +126,17 @@ window.AggregateChart = function(config) {
                 right: '50%'
             });
 
-        enter.append('div').classed('breakdown', true);
+        enter.append('div').classed('aggregate-breakdown', true);
 
-        var breakdowns = chartRows.select('.breakdown');
-        var breakdownItems = breakdowns.selectAll('.breakdown-item')
+        var breakdowns = chartRows.select('.aggregate-breakdown');
+        var breakdownItems = breakdowns.selectAll('.aggregate-breakdown-item')
                 .data(function(d) { return d.values });
         var breakdownItemsEnter = breakdownItems.enter().append('div')
-                                    .classed('breakdown-item', true)
+                                    .classed('aggregate-breakdown-item', true)
                                     .style({
                                         position: 'relative'
                                     });
-        breakdownItemsEnter.append('div').classed('chart-label', true)
+        breakdownItemsEnter.append('div').classed('aggregate-chart-label', true)
                 .text(function(d) { return d.label })
                 .style({
                     'margin-left': -1 * (labelMaxWidth + labelPadding) + 'px'
@@ -134,18 +144,19 @@ window.AggregateChart = function(config) {
 
 
         // Create bar for positive effects in breakdown
-        breakdownItemsEnter.append('div').classed('bar', true).classed('positive', true)
+        breakdownItemsEnter.append('div').classed('aggregate-chart-bar', true)
+            .classed('positive', true)
             .style({
                 position: 'absolute',
                 background: '#cfc',
                 top: 0,
                 height: '1em',
                 left: '50%'
-            }).append('div').classed('tooltip', true);
-        breakdownItemsEnter.append('div').classed('breakdown', true);
+            }).append('div').classed('aggregate-tooltip', true);
 
         // Create the bar for negative effects in breakdown
-        breakdownItemsEnter.append('div').classed('bar', true).classed('negative', true)
+        breakdownItemsEnter.append('div').classed('aggregate-chart-bar', true)
+            .classed('negative', true)
             .style({
                 position: 'absolute',
                 background: '#fcc',
@@ -155,40 +166,41 @@ window.AggregateChart = function(config) {
             });
 
         // Change the widths & offsets of bars
-        chartRows.select('.bar.positive').transition().duration(time)
+        chartRows.select('.aggregate-chart-bar.positive').transition().duration(time)
             .style({
-                width: function(d) { return d.value > 0 ?
-                    scale * d.value + 'px' : '0px' },
+                width: function(d) {
+                    return d.value > 0 ? scale * d.value + 'px' : '0px';
+                },
                 left: offset + 'px'
             });
-        chartRows.select('.bar.negative').transition().duration(time)
+        chartRows.select('.aggregate-chart-bar.negative').transition().duration(time)
             .style({
                 width: function(d) { return d.value < 0 ?
                     scale * -1 * d.value + 'px' : '0px' },
-                right: (max * scale + tooltipWidth) + 'px'
+                right: offsetRight + 'px' //(max * scale + tooltipWidth) + 'px'
             });
 
         // Change the widths & offsets of bars
-        breakdownItems.select('.bar.positive').transition().duration(time)
-            .style({
-                width: function(d) { return d.value > 0 ?
+        breakdownItems.select('.aggregate-chart-bar.positive').transition().duration(time)
+            .style({ width: function(d) { return d.value > 0 ?
                     scale * d.value + 'px' : '0px' },
-                left: -1 * min * scale + 'px'
+                left: offsetSub + 'px'
             });
-        breakdownItems.select('.bar.negative').transition().duration(time)
+        breakdownItems.select('.aggregate-chart-bar.negative').transition().duration(time)
             .style({
                 width: function(d) { return d.value < 0 ?
                     scale * -1 * d.value + 'px' : '0px' },
-                right: (max * scale + tooltipWidth) + 'px'
+                right: offsetRight + 'px' //(max * scale + tooltipWidth) + 'px'
             });
-        this.yAxis.transition().duration(time)
-            .style({
-                left: offset + 'px'
-            });
-        chartRows.select('.tooltip')
-            .text(function(d) { return Math.round(d.value) });
-        breakdownItems.select('.tooltip')
-            .text(function(d) { return Math.round(d.value) });
+        chartRows.select('.aggregate-tooltip')
+            .text(function(d) { return self.format(d.value) });
+        breakdownItems.select('.aggregate-tooltip')
+            .text(function(d) { return self.format(d.value) });
+
+        
+        this.xAxis.scale(d3.scale.linear().domain([min, max]).range([0, barWidth]));
+        this.xAxisGroup.transition().duration(time).call(this.xAxis);
+        this.xAxisGroup.attr('transform', 'translate(' + (labelMaxWidth + labelPadding + accordionWidth) + ', 30)');
 
     }
 

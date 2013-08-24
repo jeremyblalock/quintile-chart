@@ -1,0 +1,144 @@
+#aggregate-chart-wrapper {
+  background: white;
+  padding: 20px; }
+
+#aggregate-chart-wrapper > div {
+  border-top: 1px solid transparent; }
+
+.aggregate-toggle-btns {
+  position: absolute;
+  right: 20px;
+  top: 20px; }
+  .aggregate-toggle-btns li {
+    display: block;
+    float: left; }
+    .aggregate-toggle-btns li a {
+      display: block;
+      background: #eeeeee;
+      border: 1px solid #dddddd;
+      margin-left: -1px;
+      width: 50px;
+      height: 50px;
+      text-align: center;
+      line-height: 20px;
+      vertical-align: middle;
+      padding-top: 10px;
+      font-weight: bold;
+      text-decoration: none;
+      color: #888888;
+      position: relative;
+      line-height: 30px; }
+      .aggregate-toggle-btns li a:hover {
+        color: #333333; }
+      .aggregate-toggle-btns li a.active {
+        background-color: #cccccc;
+        border-color: #bbbbbb;
+        color: #333333;
+        z-index: 2; }
+    .aggregate-toggle-btns li:first-child a {
+      border-radius: 4px 0 0 4px; }
+    .aggregate-toggle-btns li:last-child a {
+      border-radius: 0 4px 4px 0; }
+
+.aggregate-chart .aggregate-chart-row {
+  padding-bottom: 1em;
+  margin-top: 1em; }
+  .aggregate-chart .aggregate-chart-row:last-child {
+    border-bottom: none; }
+  .aggregate-chart .aggregate-chart-row:first-child {
+    padding-top: 1em !important;
+    border-top: 1px solid #cccccc; }
+    .aggregate-chart .aggregate-chart-row:first-child > .aggregate-chart-bar {
+      top: 1em !important; }
+  .aggregate-chart .aggregate-chart-row > .aggregate-chart-label {
+    font-weight: bold;
+    -webkit-transition: color 0.2s;
+    cursor: pointer;
+    border-bottom: 1px dotted transparent; }
+    .aggregate-chart .aggregate-chart-row > .aggregate-chart-label:hover {
+      border-bottom-color: #888888; }
+  .aggregate-chart .aggregate-chart-row .aggregate-chart-bar {
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    outline: 1px solid rgba(0, 0, 0, 0.2);
+    outline-offset: -1px; }
+.aggregate-chart .aggregate-breakdown {
+  padding: 0.8em 0 0.2em 0;
+  display: none; }
+.aggregate-chart .aggregate-breakdown-item {
+  margin-top: 0.75em; }
+  .aggregate-chart .aggregate-breakdown-item > .aggregate-chart-label {
+    color: #777777;
+    font-size: 14px; }
+.aggregate-chart .aggregate-accordion-button {
+  cursor: pointer;
+  -webkit-transition: all 0.2s;
+  font-size: 12px;
+  margin-top: 2px;
+  margin-left: 4px;
+  font-family: Arial, sans-serif; }
+.aggregate-chart .aggregate-chart-row.expanded .aggregate-breakdown {
+  display: block; }
+.aggregate-chart .aggregate-chart-row.expanded .aggregate-accordion-button {
+  -webkit-transform: rotate(90deg);
+  color: #0092ff; }
+.aggregate-chart .aggregate-chart-row.expanded > .aggregate-chart-label {
+  color: #0092ff; }
+.aggregate-chart .aggregate-tooltip {
+  position: absolute;
+  left: 100%;
+  margin-left: 0.7em;
+  color: #777777;
+  padding: 6px;
+  font-size: 12px;
+  font-weight: bold;
+  line-height: 1em;
+  border: 1px solid #cccccc;
+  top: 50%;
+  margin-top: -0.94em;
+  white-space: nowrap;
+  background: white; }
+  .aggregate-chart .aggregate-tooltip:before, .aggregate-chart .aggregate-tooltip:after {
+    position: absolute;
+    right: 100%;
+    top: 50%;
+    content: "";
+    display: "block"; }
+  .aggregate-chart .aggregate-tooltip:before {
+    border: 6px solid transparent;
+    border-right-color: #bbbbbb;
+    border-left: none;
+    margin-top: -6px; }
+  .aggregate-chart .aggregate-tooltip:after {
+    border: 5px solid transparent;
+    border-right-color: white;
+    border-left: none;
+    margin-top: -5px; }
+.aggregate-chart .aggregate-breakdown-item .aggregate-tooltip {
+  display: none; }
+.aggregate-chart .aggregate-breakdown-item:hover .aggregate-tooltip {
+  display: block; }
+.aggregate-chart .x-axis-wrapper {
+  position: absolute;
+  height: 100%;
+  width: 100%; }
+  .aggregate-chart .x-axis-wrapper svg {
+    height: 100%; }
+  .aggregate-chart .x-axis-wrapper path, .aggregate-chart .x-axis-wrapper line {
+    fill: none;
+    stroke: #e5e5e5;
+    shape-rendering: crispEdges; }
+  .aggregate-chart .x-axis-wrapper .domain {
+    opacity: 0;
+    display: none; }
+  .aggregate-chart .x-axis-wrapper .tick.major line {
+    -webkit-transform: translate(0, 16px);
+    -moz-transform: translate(0, 16px);
+    -ms-transform: translate(0, 16px);
+    -o-transform: translate(0, 16px);
+    transform: translate(0, 16px); }
+  .aggregate-chart .x-axis-wrapper .tick.major text {
+    font-size: 12px;
+    fill: #777777; }
+.aggregate-chart .aggregate-chart-rows {
+  padding-top: 30px; }
